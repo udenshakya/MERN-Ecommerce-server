@@ -4,17 +4,34 @@ import express from "express";
 const app = express.Router();
 
 app.post("/create-checkout-session", async (req, res) => {
-  const session = await stripe.checkout.sessions.create({
-    line_items: [
-      {
-        // Provide the exact Price ID (for example, pr_1234) of the product you want to sell
-        price: "{{PRICE_ID}}",
-        quantity: 1,
+  const { cartItems, amount, userId,shippingCharges,subtotal,tax,discount } = req.body;
+
+  const line_items = req.body.cartItems.map((item: any) => {
+    return {
+    
+      price_data: {
+        currency: "inr",
+
+        product_data: {
+          name: item.name,
+          metadata: {
+            id: item.productId,
+          },
+        },
+        unit_amount: (item.price*item.cartQuantity * 100)+shippingCharges+tax-discount  ,
       },
-    ],
+      quantity: item.cartQuantity,
+    };
+  });
+
+  console.log(cartItems, amount, userId);
+  const session = await stripe.checkout.sessions.create({
+    payment_method_types: ["card"],
+    line_items,
     mode: "payment",
-    success_url: `${process.env.CLIENT_URL}/checkout-success`,
+    success_url: `${process.env.CLIENT_URL}/checkout-success?status=success&sessionId={CHECKOUT_SESSION_ID}`,
     cancel_url: `${process.env.CLIENT_URL}/cart`,
+    billing_address_collection:"required"
   });
 
   res.send({
@@ -22,4 +39,4 @@ app.post("/create-checkout-session", async (req, res) => {
   });
 });
 
-export default app
+export default app;
