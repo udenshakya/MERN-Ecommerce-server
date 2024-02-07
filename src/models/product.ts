@@ -6,10 +6,10 @@ const schema = new mongoose.Schema(
       type: String,
       required: [true, "Please enter name"],
     },
-    photo: {
-      type: String,
-      required: [true, "Please enter photo"],
-    },
+    // photo: {
+    //   type: String,
+    //   required: [true, "Please enter photo"],
+    // },
     price: {
       type: Number,
       required: [true, "Please enter price"],
@@ -19,10 +19,14 @@ const schema = new mongoose.Schema(
       required: [true, "Please enter stock"],
     },
     category: {
-        type: String,
-        required: [true, "Please enter category"],
-        trim:true
-      },
+      type: String,
+      required: [true, "Please enter category"],
+      trim: true,
+    },
+    image: {
+      type: Object,
+      required: [true, "Please enter image"],
+    },
   },
   { timestamps: true }
 );
